@@ -60,7 +60,7 @@
 			var nextYear = initYear + 1;
 			// join tbody>tr>td for eveyday
 			while (iDate.getFullYear() < nextYear && iDate.getMonth() < endMonth) {
-				var className = iDate.getMonth() %2 ==0 ? 'even-day' : 'odd-day';
+				var className = iDate.getMonth() %2 ==0 ? 'even day' : 'odd day';
 				// 高亮今天
 				(iDate.getDate() == new Date().getDate() && iDate.getMonth() == new Date().getMonth())? className+=' today' : null;
 				// 如果这一天是这周的第一天，那就另起一行
@@ -86,6 +86,16 @@
 			// 渲染dom前的回调函数，参数为该dom的jQuery对象
 			opts.bDrawCallback && typeof opts.bDrawCallback=='function'? opts.bDrawCallback.call($self, $(htmlStr)) :null;
 			$self.html(htmlStr);
+
+			// bind event
+			$('body').on('click', function (e) {
+				console.log($self.find('.active'))
+				$self.find('.active').removeClass('active');
+			})
+			$self.on('click', 'td', function (e) {
+				e.stopPropagation();
+				$(this).toggleClass('active');
+			})
 		} else if (typeof arguments[0] == 'string' && arguments[0] != '') {
 			switch (arguments[0]) {
 				case 'show':

@@ -9,10 +9,8 @@
 	/*background-color: #FDFDFD;*/
 	/*border-radius: 8%;*/
 }
-.xl tbody td:hover {
-	/*box-shadow: 0 0 5px #999;*/
+.xl .day:hover {
 	background-color: #EEE;
-	/*color: #FFF;*/
 	cursor: pointer;
 }
 .xl .weeknum {
@@ -20,12 +18,12 @@
 	font-size: 0.5rem;
 	color: #777;
 }
-.xl .even-day {
+.xl .even {
 	/*background-color: #FFFFEA;*/
 	background-color: #bfeefa;
 	color: #555768;
 }
-.xl .odd-day {
+.xl .odd {
 	/*background-color: #FFEAFF;*/
 	background-color: #F3F6A;
 	color: #333;
@@ -36,4 +34,10 @@
 }
 .xl .month {
 	color: black;
+}
+.xl .active {
+	background-color: #cbcdcf;
+}
+.xl .active:hover {
+	background-color: #cccecf;
 }
