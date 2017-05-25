@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>校历Demo</title>
+	<link rel="stylesheet" href="xl.css">
+	<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+	<script src="xl.js"></script>
+</head>
+<body>
+	<div id="test" class="xl">xiaoli</div>
+	<script>
+		$('#test').xl(/*{
+			weekStart: 1,		// 一周从周几开始：周1
+			showWeekNum: true, 	// 是否显示周次：是
+			initYear: 2017,		// 初始年，默认为当前年
+			monthRange: [1, 12],// [起始月(默认为1月), 结束月(默认为12月)]
+			weekNumStart: 1,	// 设置周次从第几周开始，默认从第一周开始
+			// 渲染dom前的回调函数，参数为该dom的jQuery对象
+			bDrawCallback: function (obj) { 
+				// alert(obj)
+			}
+		}*/);
+		// $('#test').xl('hide');
+		// $('#test').xl('show');
+		// $('#test').xl('distory');
+	</script>
+</body>
+</html>

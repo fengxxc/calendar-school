@@ -1,0 +1,39 @@
+.xl {
+
+}
+
+.xl td {
+	width: 3rem;
+	height: 3rem;
+	text-align: center;
+	/*background-color: #FDFDFD;*/
+	/*border-radius: 8%;*/
+}
+.xl tbody td:hover {
+	/*box-shadow: 0 0 5px #999;*/
+	background-color: #EEE;
+	/*color: #FFF;*/
+	cursor: pointer;
+}
+.xl .weeknum {
+	width: 1rem;
+	font-size: 0.5rem;
+	color: #777;
+}
+.xl .even-day {
+	/*background-color: #FFFFEA;*/
+	background-color: #bfeefa;
+	color: #555768;
+}
+.xl .odd-day {
+	/*background-color: #FFEAFF;*/
+	background-color: #F3F6A;
+	color: #333;
+}
+.xl .today {
+	border-radius: 50%;
+	background-color: #f7f086;
+}
+.xl .month {
+	color: black;
+}
