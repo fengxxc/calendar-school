@@ -1,5 +1,9 @@
+/**
+ * v1.0.0 by chenfeng
+ * https://github.com/fengxxc/calendar-school/
+*/
 ;(function($){
-	$.fn.xl = function() {
+	$.fn.caleScho = function() {
 		console.time();
 		
 		var $self = $(this);
@@ -58,6 +62,9 @@
 
 			var iDate = startDate;
 			var nextYear = initYear + 1;
+			// 初始化CalendarConverter对象
+			var cc = new CalendarConverter;
+			var lunar = null;
 			// join tbody>tr>td for eveyday
 			while (iDate.getFullYear() < nextYear && iDate.getMonth() < endMonth) {
 				var className = iDate.getMonth() %2 ==0 ? 'even day' : 'odd day';
@@ -67,19 +74,65 @@
 				if (iDate.getDay() == weekStart) {
 					if (showWeekNum === true) {
 						var wn = (weekNum-weekNumStart+1) < 1? "":(weekNum-weekNumStart+1)
-						htmlStr += '</tr><tr><td class="weeknum">'+ wn +'</td><td class="'+className+'">';
+						htmlStr += '</tr><tr><td class="weeknum">'+ wn +'</td>';
 						weekNum += 1;
 					} else {
-						htmlStr += '</tr><tr><td class="'+className+'">';
+						htmlStr += '</tr><tr>';
 					}
-				} else {
-					htmlStr += '<td class="'+className+'">';
 				}
+				// lunar: 这天的农历对象
+				/* 格式=>
+				 *  {
+					      cDay: "戊戌"
+				        , cMonth: "丁未"
+				        , cYear: "壬辰"
+				        , isLeap: false             // 该月是否为闰月
+				        , lDay: 18
+				        , lMonth: 6
+				        , lYear: 2012
+				        , lunarDay: "十八"
+				        , lunarFestival: ""
+				        , lunarMonth: "六"
+				        , lunarYear: "龙"
+				        , sDay: 5
+				        , sMonth: 8
+				        , sYear: 2012
+				        , solarFestival: ""         // 节日
+				        , solarTerms: ""            // 节气
+				        , week: "日"                // 周几
+				    }
+				 *  
+				 */
+				lunar = cc.solar2lunar(iDate);
+				// td for eveyday
+				if (opts.beforeShowDay && typeof opts.beforeShowDay == 'function') {
+					// var bsdResult =  opts.beforeShowDay.call($self, iDate);
+					var bsdResult =  opts.beforeShowDay.call($self, iDate, lunar);
+					if (bsdResult && 'class' in bsdResult) className += ' ' + bsdResult.class;
+				}
+				htmlStr += '<td class="'+className+'">';
+				
 				// 如果这天是1日，就加上月份
-				if (iDate.getDate() == 1) {
+				if (iDate.getDate() == 1) 
 					htmlStr += '<strong class="month">' + (iDate.getMonth()+1) + '</strong>/';
+				htmlStr += iDate.getDate();
+				
+				// htmlStr += lunar.lunarMonth + "月"; // 农历月份
+				// 如果是农历节日，就显示农历节日
+				var lnInfo = '';
+				if (lunar.lunarFestival) {
+					lnInfo = lunar.lunarFestival;
+				} else {
+					// 如果是农历一日，就显示农历月
+					if (lunar.lDay == 1) {
+						lnInfo = lunar.lunarMonth + "月";
+					} else {
+						lnInfo = lunar.lunarDay;
+					}
 				}
-				htmlStr += iDate.getDate() + '</td>';
+				// var lnInfo = lunar.lunarFestival? lunar.lunarFestival : lunar.lunarDay;
+				htmlStr += '<div class="lunarInfo">' + lnInfo + '</div>';
+				htmlStr += '</td>'
 				iDate = new Date(iDate.getFullYear(), iDate.getMonth(), iDate.getDate()+1);
 			}
 			htmlStr += '</tr></tbody></table>';
@@ -89,7 +142,6 @@
 
 			// bind event
 			$('body').on('click', function (e) {
-				console.log($self.find('.active'))
 				$self.find('.active').removeClass('active');
 			})
 			$self.on('click', 'td', function (e) {
