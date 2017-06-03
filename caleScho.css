@@ -1,18 +1,16 @@
 .xl {
-
+	
 }
 
 .xl td,.xl th {
-	width: 3rem;
-	height: 3rem;
+	width: 4rem !important;
+	height: 4rem !important;
 	text-align: center;
-	/*background-color: #FDFDFD;*/
-	/*border-radius: 8%;*/
 }
 .xl .day:hover {
 	background-color: #EEE;
 	cursor: pointer;
-	border-radius: 10%;
+	/*border-radius: 10%;*/
 }
 .xl .weeknum {
 	width: 1rem;
@@ -31,7 +29,7 @@
 	color: #333;
 }
 .xl .today {
-	border-radius: 50%;
+	/*border-radius: 10%;*/
 	background-color: #f7f086;
 }
 .xl .month {
@@ -41,6 +39,18 @@
 .xl .lunarInfo {
 	font-size: 0.5em;
 	color: #555;
+	background-color: transparent;
+}
+.xl .caleScho_edit {
+	position: absolute;
+	margin-left: 2.5rem;
+	margin-top: -2rem; 
+	/*background-color: #af8c38;*/
+	/*padding: 0;*/
+}
+.xl .note {
+	/*width: 6rem !important;*/
+	/*background-color: #EEE;*/
 }
 
 /* test */
@@ -48,12 +58,13 @@
 	background-color: yellow;
 }
 .xl .festival {
-	background-color: green;
+	background-color: #AAA;
 }
 
-.xl .active {
-	background-color: #cbcdcf;
+.xl .active, .active .lunarInfo {
+	background-color: #3276b1;
+	color: #FFF;
 }
-.xl .active:hover {
-	background-color: #cccecf;
+.xl .active:hover, .active:hover .lunarInfo {
+	background-color: #3276b1;
 }

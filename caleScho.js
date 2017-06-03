@@ -72,8 +72,11 @@
 				(iDate.getDate() == new Date().getDate() && iDate.getMonth() == new Date().getMonth())? className+=' today' : null;
 				// 如果这一天是这周的第一天，那就另起一行
 				if (iDate.getDay() == weekStart) {
+					// 周次
+					var wn = (weekNum-weekNumStart+1) < 1? "":(weekNum-weekNumStart+1)
+					// 每行的note
+					// htmlStr += '<td class="note" data-weeknum="' + wn + '"></td>';
 					if (showWeekNum === true) {
-						var wn = (weekNum-weekNumStart+1) < 1? "":(weekNum-weekNumStart+1)
 						htmlStr += '</tr><tr><td class="weeknum">'+ wn +'</td>';
 						weekNum += 1;
 					} else {
@@ -110,7 +113,9 @@
 					var bsdResult =  opts.beforeShowDay.call($self, iDate, lunar);
 					if (bsdResult && 'class' in bsdResult) className += ' ' + bsdResult.class;
 				}
-				htmlStr += '<td class="'+className+'">';
+				// 公历字符串：2017-01-01
+				var caleStr = iDate.getFullYear() + '-' + (iDate.getMonth()+1) + '-' + iDate.getDate();
+				htmlStr += '<td class="' + className + '" data-cale="' + caleStr + '">';
 				
 				// 如果这天是1日，就加上月份
 				if (iDate.getDate() == 1) 
@@ -135,7 +140,53 @@
 				htmlStr += '</td>'
 				iDate = new Date(iDate.getFullYear(), iDate.getMonth(), iDate.getDate()+1);
 			}
-			htmlStr += '</tr></tbody></table>';
+			// htmlStr += '<td class="note"></td></tr></tbody>';
+			htmlStr += '</tr></tbody>';
+			var modelStr = 	'<div id="caleSchoModel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">' +
+								'<div class="modal-dialog modal-sm" role="document">' +
+									'<div class="modal-content">' +
+										'<div class="modal-header">' +
+											'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>' +
+											'<h4 class="modal-title" id="">编辑事件</h4>' +
+										'</div>' +
+										'<div class="modal-body">' +
+											'<form class="form-horizontal" role="form">' +
+												'<div class="form-group">' +
+													'<label class="col-md-3 control-label">时间</label>' +
+													'<div class="col-md-8"><input type="text" class="form-control" readOnly id="caleScho_rangeTime" value=""/></div>' +
+												'</div>' +
+												'<div class="form-group">' +
+													'<label class="col-md-3 control-label">事件名称</label>' +
+													'<div class="col-md-8"><input type="text" class="form-control"  placeholder="事件名称"  id=""/></div>' +
+												'</div>' +
+												'<div class="form-group">' +
+													'<label class="col-md-3 control-label">事件类型</label>' +
+													'<div class="col-md-8">' +
+														'<select class="form-control" id = "" name="">' +
+															'<option value="">请选择</option>' +
+														'</select>' +
+													'</div>' +
+												'</div>' +
+												'<div class="form-group">' +
+													'<label class="col-md-3 control-label">备注</label>' +
+													'<div class="col-md-8"><textarea class="form-control" name="" id="" cols="30" rows="4"></textarea></div>' +
+												'</div>' +
+												'<div class="form-group">' +
+													'<div class="col-md-8 col-md-offset-3">' +
+														'<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>&emsp;<button type="button" class="btn btn-primary">提交</button>' +
+													'</div>' +
+												'</div>' +
+											'</form>' +
+										'</div>' +
+											/*'<div class="modal-footer">' +
+												'<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button><button type="button" class="btn btn-primary">提交</button>' +
+											'</div>' +*/
+										
+									'</div>' + 
+								'</div>' + 
+							'</div>';
+			htmlStr += '<tfoot></tfoot>';
+			htmlStr += '</table>' + modelStr;
 			// 渲染dom前的回调函数，参数为该dom的jQuery对象
 			opts.bDrawCallback && typeof opts.bDrawCallback=='function'? opts.bDrawCallback.call($self, $(htmlStr)) :null;
 			$self.html(htmlStr);
@@ -143,11 +194,43 @@
 			// bind event
 			$('body').on('click', function (e) {
 				$self.find('.active').removeClass('active');
-			})
-			$self.on('click', 'td', function (e) {
+				$self.find('.caleScho_edit').remove();
+			});
+			$('.day').on('click', function (e) {
 				e.stopPropagation();
-				$(this).toggleClass('active');
+				// 如果点的是'edit'
+				if (e.target.tagName == 'A' || e.target.tagName == 'I') {
+					// console.log($(this).parents('tr'))
+					var valArr = [];
+					$self.find('.active').each(function () {
+						// valStr += $(this).data('cale');
+						valArr.push($(this).data('cale'));
+					});
+					var valStr = valArr.join(',')
+					console.log(valStr)
+					$('#caleScho_rangeTime').val(valStr);
+					console.log($('#caleScho_rangeTime'))
+					// $('#caleScho_rangeTime').text(valStr);
+					$('#caleSchoModel').modal('show');
+				} else {
+					var editBtn = '<a href="javascript:void(0);" class="caleScho_edit btn btn-success btn-xs"><i class="glyphicon glyphicon-edit"></i></a>';
+					$self.find('.caleScho_edit').remove();
+					$(this).toggleClass('active');
+					$self.find('.active')? $self.find('.active:last').prepend(editBtn) : null;
+					// $self.find('.active')? $self.find('.active:last').after(editBtn) : null;
+
+				}
 			})
+			$('.caleScho_edit').on('click', function (e) {
+				console.log("oh")
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			});
+			// 取消edit模态框冒泡
+			$('#caleSchoModel').on('click', function (e) {
+				e.stopPropagation();
+			});
 		} else if (typeof arguments[0] == 'string' && arguments[0] != '') {
 			switch (arguments[0]) {
 				case 'show':

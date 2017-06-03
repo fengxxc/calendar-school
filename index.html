@@ -5,6 +5,8 @@
 	<title>校历Demo</title>
 	<link rel="stylesheet" href="caleScho.css">
 	<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+	<script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.js"></script>
+	<link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css" rel="stylesheet">
 	<script src="caleScho.js"></script>
 	<script src="calendar-converter.js"></script>
 </head>
@@ -16,7 +18,7 @@
 			showWeekNum: true, 	// 是否显示周次：是
 			// initYear: 2017,		// 初始年，默认为当前年
 			monthRange: [1, 12],// [起始月(默认为1月), 结束月(默认为12月)]
-			weekNumStart: 1,	// 设置周次从第几周开始，默认从第一周开始
+			weekNumStart: 2,	// 设置周次从第几周开始，默认从第一周开始
 			// 渲染dom前的回调函数，参数为该dom的jQuery对象
 			bDrawCallback: function (obj) { 
 				// alert(obj)
@@ -24,23 +26,23 @@
 			beforeShowDay : function (date, lunar) { // param：公历每日, 农历每日
 				// 9日的class设为“hai”
 				if (date.getDate() == 9) {
-					return {
+					/*return {
 						class: 'mark'
-					}
+					}*/
 				// 农历节日的class设为“festival”
-				} else if (lunar.lunarFestival) {
+				}
+				if (lunar.lunarFestival) {
 					return {
 						class: 'festival'
 					}
-				} else {
-					return false;
 				}
 			}
-		}
-		);
-		// $('#test').xl('hide');
-		// $('#test').xl('show');
-		// $('#test').xl('distory');
+		});
+		console.log($('#test'))
+		// $('#test').caleScho('hide');
+		// $('#test').caleScho('show');
+		// $('#test').caleScho('distory');
+		// $('#test').caleScho();
 	</script>
 </body>
 </html>
