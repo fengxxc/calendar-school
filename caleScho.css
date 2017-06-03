@@ -29,17 +29,16 @@
 	color: #333;
 }
 .xl .today {
-	/*border-radius: 10%;*/
+	border-radius: 50%;
 	background-color: #f7f086;
 }
 .xl .month {
-	color: black;
+	/*color: black;*/
 }
 
 .xl .lunarInfo {
 	font-size: 0.5em;
-	color: #555;
-	background-color: transparent;
+	/*background-color: transparent;*/
 }
 .xl .caleScho_edit {
 	position: absolute;
@@ -52,6 +51,9 @@
 	/*width: 6rem !important;*/
 	/*background-color: #EEE;*/
 }
+.xl .unObjYear {
+	color: #A6A6A6;
+}
 
 /* test */
 .xl .mark {
@@ -61,10 +63,10 @@
 	background-color: #AAA;
 }
 
-.xl .active, .active .lunarInfo {
+.xl .active {
 	background-color: #3276b1;
 	color: #FFF;
 }
-.xl .active:hover, .active:hover .lunarInfo {
+.xl .active:hover{
 	background-color: #3276b1;
 }

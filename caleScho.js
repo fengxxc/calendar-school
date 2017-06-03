@@ -12,23 +12,25 @@
 
 			var opts = arguments[0] || {};
 			
-			var htmlStr = '<table>';
 			// 初始年，默认为当前年
 			var initYear = opts.initYear? parseInt(opts.initYear) : new Date().getFullYear();
 			// 起始月，默认为1月
 			var startMonth = opts.monthRange? parseInt(opts.monthRange[0]) : 1;
+			// 起始日，默认为1月1日
 			var startDate = new Date(initYear, startMonth-1, 1); // 2017-?-1
 			// 结束月，默认为12月
 			var endMonth = opts.monthRange? parseInt(opts.monthRange[1]) : 12;
 			// 这年的1月1日星期几？如果是星期天（0），则返回7
 			var startDay = startDate.getDay() == 0? 7 : startDate.getDay();
 			// 设置一周从哪天开始，星期天为0，星期一为1，以此类推，默认星期一 
-			var weekStart = parseInt(opts.weekStart) || 1;
+			// var weekStart = parseInt(opts.weekStart) || 1;
+			var weekStart = opts.weekStart !=null && (typeof opts.weekStart=='number'||typeof opts.weekStart=='string')? parseInt(opts.weekStart) : 1;
 			// 设置是否显示周次，默认显示
 			var showWeekNum = opts.showWeekNum || true;
 			// 设置周次从第几周开始，默认从第一周开始
 			var weekNumStart = opts.weekNumStart || 1;
-			
+
+			var htmlStr = '<table>';
 			// join thead
 			if (showWeekNum === true) {
 				htmlStr += '<thead><tr><th></th><th></th><th colspan="5">'+ initYear +'年</th><th></th><tr><th class="weeknum">周次</th>';
@@ -43,45 +45,47 @@
 			htmlStr += '</tr></thead>';
 
 			// join tbody
-			htmlStr += '<tbody><tr>';
-			// 周数
+			htmlStr += '<tbody>';
+			// 第几周，从1开始
 			var weekNum = 1;
-			 
 			// 第一天前面空多少格
 			var spanNum = startDay-weekStart;
-			if (spanNum != 7 && spanNum != 0) {
-				if (showWeekNum === true) {
-					var wn = (weekNum-weekNumStart+1) < 1? "":(weekNum-weekNumStart+1)
-					htmlStr += '<td class="weeknum">'+ wn +'</td>';
-					weekNum += 1;
-				}
-				for (var i = 0; i < spanNum; i++) {
-					htmlStr += '<td> </td>';
-				}
-			}
-
-			var iDate = startDate;
-			var nextYear = initYear + 1;
+			// 视图上的起始日
+			var vStartD = new Date(initYear, startMonth-1, startDate.getDate()-spanNum);
+			var iDate = vStartD;
 			// 初始化CalendarConverter对象
 			var cc = new CalendarConverter;
 			var lunar = null;
 			// join tbody>tr>td for eveyday
-			while (iDate.getFullYear() < nextYear && iDate.getMonth() < endMonth) {
-				var className = iDate.getMonth() %2 ==0 ? 'even day' : 'odd day';
-				// 高亮今天
-				(iDate.getDate() == new Date().getDate() && iDate.getMonth() == new Date().getMonth())? className+=' today' : null;
+			var endDate = new Date(initYear, endMonth, 1);
+			// 结束日期是星期几
+			var endDay = endDate.getDay() == 0? 7 : endDate.getDay();
+			var vEndD = new Date(initYear, endMonth, 1+(7-(endDay-weekStart)));
+			while (iDate < vEndD) {
+				var className = '';
+				
+				
+				if (iDate.getFullYear() == initYear) {
+					className = iDate.getMonth() %2 ==0 ? 'even day' : 'odd day';
+					// 高亮今天
+					(iDate.getDate() == new Date().getDate() && iDate.getMonth() == new Date().getMonth())? className+=' today' : null;
+				} else {
+					// 非当前年灰化
+					iDate.getFullYear() == initYear? null : className+=' unObjYear';
+				}
 				// 如果这一天是这周的第一天，那就另起一行
 				if (iDate.getDay() == weekStart) {
 					// 周次
-					var wn = (weekNum-weekNumStart+1) < 1? "":(weekNum-weekNumStart+1)
+					var wn = (weekNum-weekNumStart+1) < 1? "":(weekNum-weekNumStart+1);
 					// 每行的note
 					// htmlStr += '<td class="note" data-weeknum="' + wn + '"></td>';
+					// 是否显示周次
 					if (showWeekNum === true) {
-						htmlStr += '</tr><tr><td class="weeknum">'+ wn +'</td>';
-						weekNum += 1;
+						htmlStr += '<tr><td class="weeknum">'+ wn +'</td>';
 					} else {
-						htmlStr += '</tr><tr>';
+						htmlStr += '<tr>';
 					}
+					weekNum += 1;
 				}
 				// lunar: 这天的农历对象
 				/* 格式=>
@@ -200,16 +204,13 @@
 				e.stopPropagation();
 				// 如果点的是'edit'
 				if (e.target.tagName == 'A' || e.target.tagName == 'I') {
-					// console.log($(this).parents('tr'))
 					var valArr = [];
 					$self.find('.active').each(function () {
 						// valStr += $(this).data('cale');
 						valArr.push($(this).data('cale'));
 					});
 					var valStr = valArr.join(',')
-					console.log(valStr)
 					$('#caleScho_rangeTime').val(valStr);
-					console.log($('#caleScho_rangeTime'))
 					// $('#caleScho_rangeTime').text(valStr);
 					$('#caleSchoModel').modal('show');
 				} else {
@@ -222,7 +223,6 @@
 				}
 			})
 			$('.caleScho_edit').on('click', function (e) {
-				console.log("oh")
 				e.stopPropagation();
 				e.preventDefault();
 				return false;
