@@ -1,7 +1,9 @@
 .xl {
 	
 }
-
+.xl a {
+	text-decoration: none;
+}
 .xl td,.xl th {
 	width: 4rem !important;
 	height: 4rem !important;
@@ -106,7 +108,7 @@
 	background-color: yellow;
 }
 .xl .festival {
-	background-color: #AAA;
+	background-color: #2aa8bf;
 }
 
 .xl .active {

@@ -4,14 +4,15 @@
 */
 ;(function($){
 	$.fn.caleScho = function() {
+		// 拼接'<table>...</table>'
 		function joinTableStr() {
 			var htmlStrArr = [];
 			htmlStrArr.push('<table>');
 			// join thead
 			if (showWeekNum === true) {
-				htmlStrArr.push('<thead><tr><th></th><th></th><th colspan="5">'+ initYear +'年</th><th></th><tr><th class="weeknum">周次</th>');
+				htmlStrArr.push('<thead><tr><th></th><th><a id="prevYear-btn" href="javascript:void(0);"><<</a></th><th colspan="5">'+ initYear +'年</th><th><a id="nextYear-btn" href="javascript:void(0);">>></a></th><tr><th class="weeknum">周次</th>');
 			} else {
-				htmlStrArr.push('<thead><tr><th></th><th colspan="5">'+ initYear +'年</th><th></th><tr>');
+				htmlStrArr.push('<thead><tr><th><a id="prevYear-btn" href="javascript:void(0);"><<</a></th><th colspan="5">'+ initYear +'年</th><th><a id="nextYear-btn" href="javascript:void(0);">>></a></th><tr>');
 			}
 			var weekArr = ['日', '一', '二', '三', '四', '五', '六'];
 			for (var i = 0, iDay = weekStart; i < 7; i++) {
@@ -44,7 +45,8 @@
 				if (iDate.getFullYear() == initYear) {
 					className = iDate.getMonth() %2 ==0 ? 'even day' : 'odd day';
 					// 高亮今天
-					(iDate.getDate() == new Date().getDate() && iDate.getMonth() == new Date().getMonth())? className+=' today' : null;
+					// (iDate.getDate() == new Date().getDate() && iDate.getMonth() == new Date().getMonth())? className+=' today' : null;
+					(iDate.getDate()==new Date().getDate() && iDate.getMonth()==new Date().getMonth() && iDate.getFullYear()==new Date().getFullYear())? className+=' today' : null;
 				} else {
 					// 非当前年灰化
 					iDate.getFullYear() == initYear? null : className+=' unObjYear';
@@ -169,39 +171,16 @@
 			htmlStrArr.push('</table>');
 			htmlStrArr.push(modelStrArr.join(''))
 			return htmlStrArr.join('');
-		}
-		console.time();
-		
-		var $self = $(this);
-		// arguments[0] is 'options'
-		if (!arguments.length || typeof arguments[0] == 'object') {
-
-			var opts = arguments[0] || {};
-			
-			// 初始年，默认为当前年
-			var initYear = opts.initYear? parseInt(opts.initYear) : new Date().getFullYear();
-			// 起始月，默认为1月
-			var startMonth = opts.monthRange? parseInt(opts.monthRange[0]) : 1;
-			// 起始日，默认为1月1日
-			var startDate = new Date(initYear, startMonth-1, 1); // 2017-?-1
-			// 结束月，默认为12月
-			var endMonth = opts.monthRange? parseInt(opts.monthRange[1]) : 12;
-			// 这年的1月1日星期几？如果是星期天（0），则返回7
-			var startDay = startDate.getDay() == 0? 7 : startDate.getDay();
-			// 设置一周从哪天开始，星期天为0，星期一为1，以此类推，默认星期一 
-			// var weekStart = parseInt(opts.weekStart) || 1;
-			var weekStart = opts.weekStart !=null && (typeof opts.weekStart=='number'||typeof opts.weekStart=='string')? parseInt(opts.weekStart) : 1;
-			// 设置是否显示周次，默认显示
-			var showWeekNum = opts.showWeekNum || true;
-			// 设置周次从第几周开始，默认从第一周开始
-			var weekNumStart = opts.weekNumStart || 1;
-
-			var oStr = joinTableStr();
+		};
+		// 渲染dom
+		function render(str) {
+			var oStr = str || joinTableStr();
 			// 渲染dom前的回调函数，参数为该dom的jQuery对象
 			opts.bDrawCallback && typeof opts.bDrawCallback=='function'? opts.bDrawCallback.call($self, $(oStr)) :null;
 			$self.html(oStr);
-
-			// bind event
+		};
+		// 绑定事件
+		function bindEven() {
 			$('body').on('click', function (e) {
 				$self.find('.active').removeClass('active');
 				$self.find('.caleScho_edit').remove();
@@ -228,7 +207,7 @@
 					// $self.find('.active')? $self.find('.active:last').after(editBtn) : null;
 
 				}
-			})
+			});
 			$('.caleScho_edit').on('click', function (e) {
 				e.stopPropagation();
 				e.preventDefault();
@@ -238,17 +217,68 @@
 			$('#caleSchoModel').on('click', function (e) {
 				e.stopPropagation();
 			});
-		} else if (typeof arguments[0] == 'string' && arguments[0] != '') {
-			switch (arguments[0]) {
-				case 'show':
-					$self.show(); break;
-				case 'hidden': case 'hide':
-					$self.hide(); break;
-				case 'distory':
-					$self.remove();
+			// 点击上一年
+			$('#prevYear-btn').on('click', function (e) {
+				initYear -= 1;
+				prepareData();
+				render();
+				bindEven();
+			});
+			// 点击下一年
+			$('#nextYear-btn').on('click', function (e) {
+				initYear += 1;
+				prepareData();
+				render();
+				bindEven();
+			});
+		};
+		// 准备数据
+		function prepareData() {
+			// 初始年，默认为当前年
+			initYear = initYear || (opts.initYear? parseInt(opts.initYear) : new Date().getFullYear());
+			// 起始月，默认为1月
+			startMonth = startMonth || (opts.monthRange? parseInt(opts.monthRange[0]) : 1);
+			// 起始日，默认为1月1日
+			startDate =  new Date(initYear, startMonth-1, 1); // 2017-?-1
+			// 结束月，默认为12月
+			endMonth = endMonth || (opts.monthRange? parseInt(opts.monthRange[1]) : 12);
+			// 这年的1月1日星期几？如果是星期天（0），则返回7
+			startDay = (startDate.getDay() == 0? 7 : startDate.getDay());
+			// 设置一周从哪天开始，星期天为0，星期一为1，以此类推，默认星期一 
+			// weekStart = parseInt(opts.weekStart) || 1;
+			weekStart = weekStart || (opts.weekStart !=null && (typeof opts.weekStart=='number'||typeof opts.weekStart=='string')? parseInt(opts.weekStart) : 1);
+			// 设置是否显示周次，默认显示
+			showWeekNum = showWeekNum || opts.showWeekNum || true;
+			// 设置周次从第几周开始，默认从第一周开始
+			weekNumStart = weekNumStart || opts.weekNumStart || 1;
+		}
+		// 初始化
+		function init() {
+			if (!arguments.length || typeof arguments[0] == 'object') {
+				prepareData();
+				render();
+				bindEven();
+			} else if (typeof arguments[0] == 'string' && arguments[0] != '') {
+				switch (arguments[0]) {
+					case 'show':
+						$self.show(); break;
+					case 'hidden': case 'hide':
+						$self.hide(); break;
+					case 'distory':
+						$self.remove(); break;
+				}
 			}
 		}
+
+		/* start */
+		console.time();
+		var $self = $(this);
+		var initYear,startMonth,startDate,endMonth,startDay,weekStart,showWeekNum,weekNumStart = null;
+		// arguments[0] is 'options'
+		var opts = arguments[0] || {};
+		init();
 		console.timeEnd();
+		
 		return {
 			/*options: function (newopts) {
 				if (newopts && typeof newopts=='object') {
