@@ -40,8 +40,6 @@
 			var vEndD = new Date(initYear, endMonth, 1+(7-(endDay-weekStart)));
 			while (iDate < vEndD) {
 				var className = '';
-				
-				
 				if (iDate.getFullYear() == initYear) {
 					className = iDate.getMonth() %2 ==0 ? 'even day' : 'odd day';
 					// 高亮今天
@@ -278,7 +276,7 @@
 		var opts = arguments[0] || {};
 		init();
 		console.timeEnd();
-		
+
 		return {
 			/*options: function (newopts) {
 				if (newopts && typeof newopts=='object') {
@@ -290,3 +288,25 @@
 		}
 	};
 }(jQuery));
+
+/* common method */
+// 获取日期为某年的第几周
+function GetWeekIndex(dateobj) {
+	var firstDay = GetFirstWeekBegDay(dateobj.getFullYear());
+	if (dateobj < firstDay) {
+		firstDay = GetFirstWeekBegDay(dateobj.getFullYear() - 1);
+	}
+	d = Math.floor((dateobj.valueOf() - firstDay.valueOf()) / 86400000);
+	return Math.floor(d / 7) + 1;　
+}
+// 获取某年的第一天?(cf：应该是获取某年第一个星期一吧)
+function GetFirstWeekBegDay(year) {
+	var tempdate = new Date(year, 0, 1);
+	var temp = tempdate.getDay();
+	if (temp == 1){
+　　	return tempdate;
+	}
+	temp = temp == 0 7 : temp;
+	tempdate = tempdate.setDate(tempdate.getDate() + (8 - temp));
+	return new Date(tempdate);　 
+}
