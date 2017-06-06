@@ -23,12 +23,19 @@
 
 			// join tbody
 			htmlStrArr.push('<tbody>');
-			// 第几周，从1开始
-			var weekNum = 1;
 			// 第一天前面空多少格
 			var spanNum = startDay-weekStart;
 			// 视图上的起始日
 			var vStartD = new Date(initYear, startMonth-1, startDate.getDate()-spanNum);
+			// 第几周，默认从1开始
+			var weekNum = 1;
+			// 这年的第一个星期一是哪天？
+			var firstDay = GetFirstWeekBegDay(startDate.getFullYear());
+			if (startDate >= firstDay) {
+				var d = Math.floor((startDate.valueOf() - firstDay.valueOf()) / 86400000);
+				weekNum = Math.floor(d / 7) + 1;
+			};
+
 			var iDate = vStartD;
 			// 初始化CalendarConverter对象
 			var cc = new CalendarConverter;
@@ -290,23 +297,14 @@
 }(jQuery));
 
 /* common method */
-// 获取日期为某年的第几周
-function GetWeekIndex(dateobj) {
-	var firstDay = GetFirstWeekBegDay(dateobj.getFullYear());
-	if (dateobj < firstDay) {
-		firstDay = GetFirstWeekBegDay(dateobj.getFullYear() - 1);
-	}
-	d = Math.floor((dateobj.valueOf() - firstDay.valueOf()) / 86400000);
-	return Math.floor(d / 7) + 1;　
-}
-// 获取某年的第一天?(cf：应该是获取某年第一个星期一吧)
+// 应该是获取某年第一个星期一
 function GetFirstWeekBegDay(year) {
 	var tempdate = new Date(year, 0, 1);
 	var temp = tempdate.getDay();
 	if (temp == 1){
 　　	return tempdate;
 	}
-	temp = temp == 0 7 : temp;
+	temp = temp == 0? 7 : temp;
 	tempdate = tempdate.setDate(tempdate.getDate() + (8 - temp));
 	return new Date(tempdate);　 
 }
