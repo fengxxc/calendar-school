@@ -102,6 +102,11 @@
 .xl .unObjYear {
 	color: #A6A6A6;
 }
+.xl .holiday {
+	/*background-color: #f9a;*/
+	/*opacity: 0.5;*/
+	color: red;
+}
 
 /* test */
 .xl .mark {

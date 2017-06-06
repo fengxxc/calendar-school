@@ -16,7 +16,9 @@
 			}
 			var weekArr = ['日', '一', '二', '三', '四', '五', '六'];
 			for (var i = 0, iDay = weekStart; i < 7; i++) {
-				htmlStrArr.push('<th>'+weekArr[iDay]+'</th>');
+				var className = '';
+				(iDay == 0 || iDay == 6)? className = 'holiday' : null;
+				htmlStrArr.push('<th class="'+ className +'">'+weekArr[iDay]+'</th>');
 				(iDay+1) >= 7 ? iDay=0 : iDay+=1;
 			}
 			htmlStrArr.push('</tr></thead>');
@@ -52,9 +54,11 @@
 					// 高亮今天
 					// (iDate.getDate() == new Date().getDate() && iDate.getMonth() == new Date().getMonth())? className+=' today' : null;
 					(iDate.getDate()==new Date().getDate() && iDate.getMonth()==new Date().getMonth() && iDate.getFullYear()==new Date().getFullYear())? className+=' today' : null;
+					// 双休日变色
+					(iDate.getDay() == 6 || iDate.getDay() == 0) ? className+=' holiday' : null;
 				} else {
 					// 非当前年灰化
-					iDate.getFullYear() == initYear? null : className+=' unObjYear';
+					iDate.getFullYear() == initYear? null : className+='unObjYear';
 				}
 				// 如果这一天是这周的第一天，那就另起一行
 				if (iDate.getDay() == weekStart) {
